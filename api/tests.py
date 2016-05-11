@@ -1,29 +1,38 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate, APIClient
-from django.core.urlresolvers import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase, APIClient
 
 ROOT_PATH = '/api/v0'
-LOGIN_PATH = ROOT_PATH + '/login/'
+ME_PATH = ROOT_PATH + '/me/'
 
 
-class LoginTests(APITestCase):
+class MeTests(APITestCase):
 
     def setUp(self):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
         test_user.save()
 
-    def test_login_fail(self):
+    @staticmethod
+    def test_get_fail():
         client = APIClient()
-        response = client.get(LOGIN_PATH)
-        assert response.status_code == 401
+        response = client.get(ME_PATH)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         client.logout()
 
-    def test_login_ok(self):
+    @staticmethod
+    def test_get_ok():
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.get(LOGIN_PATH)
-        assert response.status_code == 200
+        response = client.get(ME_PATH)
+        assert response.status_code == status.HTTP_200_OK
+
+    @staticmethod
+    def test_delete():
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        client.force_authenticate(test_user)
+        response = client.delete(ME_PATH)
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert User.objects.filter(username='test').exists() == False
