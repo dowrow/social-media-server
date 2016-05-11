@@ -16,7 +16,7 @@ class UserList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
 
-class CurrentUser(APIView):
+class Login(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     def get(self, request, format=None):
-        return Response(request.user.username)
+        return Response(UserSerializer(request.user).data)
