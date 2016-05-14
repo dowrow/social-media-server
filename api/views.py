@@ -1,10 +1,11 @@
+from api.models import Publication
 from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer
+from .serializers import UserSerializer, PublicationSerializer
 
 
 class UserList(generics.DestroyAPIView):
@@ -23,3 +24,15 @@ class Me(APIView):
         user = request.user
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PublicationList(generics.ListCreateAPIView):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class PublicationDetail(generics.RetrieveDestroyAPIView):
+    queryset = Publication.objects.all()
+    serializer_class = PublicationSerializer
+    permission_classes = (permissions.IsAuthenticated,)
