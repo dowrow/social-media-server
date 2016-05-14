@@ -31,6 +31,9 @@ class PublicationList(generics.ListCreateAPIView):
     serializer_class = PublicationSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
 
 class PublicationDetail(generics.RetrieveDestroyAPIView):
     queryset = Publication.objects.all()

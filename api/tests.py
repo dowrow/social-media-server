@@ -72,7 +72,6 @@ class PublicationTests(APITestCase):
         client.force_authenticate(test_user)
         response = client.post(PUBLICATIONS_PATH, {
             'text': 'Test title 3',
-            'author': test_user.id,
             'image': File(open(self.IMAGE_PATH))
         })
         assert response.status_code == status.HTTP_201_CREATED
