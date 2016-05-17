@@ -1,5 +1,6 @@
 from api.models import Publication
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -26,6 +27,7 @@ class Me(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+@csrf_exempt
 class PublicationList(generics.ListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
