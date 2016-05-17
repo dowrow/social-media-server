@@ -39,8 +39,8 @@ INSTALLED_APPS = (
     'oauth2_provider',
     'social.apps.django_app.default',
     'rest_framework_social_oauth2',
-    'api'
-
+    'api',
+    'storages',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -180,6 +180,15 @@ SOCIAL_AUTH_TWITTER_SECRET = 'N4CELsGF109WiphSBw2jgm6CqA38P9IhmMOA9CKplBWhlQ1IXn
 # This maybe overriden if the access token comes from an external SDK
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
-# TODO Upload media to S3
-MEDIA_ROOT = 'media'
-MEDIA_URL = '/media/'
+# Amazon's S3 configuration
+AWS_STORAGE_BUCKET_NAME = 'social-media-server'
+AWS_ACCESS_KEY_ID = 'AKIAIHVNJMLLMG7VTMSA'
+AWS_SECRET_ACCESS_KEY = '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'
+
+# Tell django-storages that when coming up with the URL for an item in S3 storage, keep
+# it simple - just use this domain plus the path. (If this isn't set, things get complicated).
+# This controls how the `static` template tag from `staticfiles` gets expanded, if you're using it.
+# We also use it in the next setting.
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
