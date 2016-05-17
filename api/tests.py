@@ -31,6 +31,7 @@ class MeTests(APITestCase):
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(ME_PATH)
+        print response
         assert response.status_code == status.HTTP_200_OK
 
     @staticmethod
@@ -64,6 +65,7 @@ class PublicationTests(APITestCase):
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(PUBLICATIONS_PATH)
+        print response
         assert response.status_code == status.HTTP_200_OK
 
     def test_post_delete_ok(self):

@@ -26,8 +26,6 @@ class Me(APIView):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-@csrf_exempt
 class PublicationList(generics.ListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
