@@ -6,6 +6,7 @@ from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
+from social.apps.django_app.default.models import UserSocialAuth
 
 ROOT_PATH = '/api/v0'
 ME_PATH = ROOT_PATH + '/me/'
@@ -17,6 +18,8 @@ class MeTests(APITestCase):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
         test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
 
     @staticmethod
     def test_get_fail():
@@ -52,9 +55,13 @@ class PublicationTests(APITestCase):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
         test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
         test_user2 = User.objects.create(username='test2', email='email2@test.com')
         test_user2.set_password('password2')
         test_user2.save()
+        test_user_social_auth2 = UserSocialAuth.objects.create(user=test_user2, provider='twitter', uid='162377671')
+        test_user_social_auth2.save()
         test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
         test_publication2 = Publication.objects.create(text="Test title 2", author=test_user2, image=self.TEST_IMAGE)
         test_publication.save()
