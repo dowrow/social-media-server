@@ -179,3 +179,7 @@ SOCIAL_AUTH_TWITTER_SECRET = 'N4CELsGF109WiphSBw2jgm6CqA38P9IhmMOA9CKplBWhlQ1IXn
 # Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from facebook. Email is not sent by default, to get it, you must request the email permission:
 # This maybe overriden if the access token comes from an external SDK
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
+
+# TODO Upload media to S3
+MEDIA_ROOT = 'media'
+MEDIA_URL = '/media/'
