@@ -8,13 +8,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, PublicationSerializer
 
-
-class UserList(generics.DestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-
 class Me(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
