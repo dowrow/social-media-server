@@ -11,9 +11,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_profile_picture(self, user):
         user_social_auth = UserSocialAuth.objects.get(user=user)
         if user_social_auth.provider == 'facebook':
-            return 'https://graph.facebook.com/' + user_social_auth.uid + '/picture?type=square'
+            return 'https://graph.facebook.com/' + user_social_auth.uid + '/picture?type=normal'
         elif user_social_auth.provider == 'twitter':
-            return 'https://twitter.com/' + user.username + '/profile_image?size=normal'
+            return 'https://twitter.com/' + user.username + '/profile_image?size=bigger'
 
     class Meta:
         model = User
