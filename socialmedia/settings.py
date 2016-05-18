@@ -26,9 +26,6 @@ SECRET_KEY = "pvs4s(pqfx&q(#v6e)npw^-&(v)xt$h*q2k9)kq%x%a!k8hxrs"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# Use timezone
-USE_TZ = True
-
 # Application definition
 INSTALLED_APPS = (
     'django.contrib.admin',
