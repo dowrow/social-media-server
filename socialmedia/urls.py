@@ -8,5 +8,3 @@ urlpatterns = [
     url(r'^api/v0/', include('api.urls')),
 ]
 
-""""""
-""""""

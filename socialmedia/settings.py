@@ -175,12 +175,9 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_FACEBOOK_KEY = '1106502439370568'
 SOCIAL_AUTH_FACEBOOK_SECRET = '9dfb52c6a2594380768905b1bb08f6b3'
 
+# Twitter configuration
 SOCIAL_AUTH_TWITTER_KEY = 'Q0SpViJpCodWGHhLlOEs9WrUc'
 SOCIAL_AUTH_TWITTER_SECRET = 'N4CELsGF109WiphSBw2jgm6CqA38P9IhmMOA9CKplBWhlQ1IXn'
-
-# Define SOCIAL_AUTH_FACEBOOK_SCOPE to get extra permissions from facebook. Email is not sent by default, to get it, you must request the email permission:
-# This maybe overriden if the access token comes from an external SDK
-SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 
 # Amazon's S3 configuration
 AWS_STORAGE_BUCKET_NAME = 'social-media-server'

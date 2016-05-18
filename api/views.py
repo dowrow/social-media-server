@@ -1,6 +1,6 @@
 from api.models import Publication
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework import filters
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -31,6 +31,9 @@ class PublicationList(generics.ListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
     permission_classes = (permissions.IsAuthenticated,)
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+    ordering = '-timestamp'
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

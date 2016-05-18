@@ -86,4 +86,5 @@ class PublicationTests(APITestCase):
         assert response.status_code == status.HTTP_201_CREATED
         id = json.loads(response.content)['id']
         response = client.delete(PUBLICATIONS_PATH + str(id) + '/')
+        print response
         assert response.status_code == status.HTTP_204_NO_CONTENT
