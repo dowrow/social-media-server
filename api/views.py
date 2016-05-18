@@ -32,7 +32,6 @@ class PublicationList(generics.ListCreateAPIView):
     serializer_class = PublicationSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.OrderingFilter,)
-    ordering_fields = '__all__'
     ordering = '-timestamp'
 
     def perform_create(self, serializer):

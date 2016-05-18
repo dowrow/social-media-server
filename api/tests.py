@@ -71,7 +71,7 @@ class PublicationTests(APITestCase):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.get(PUBLICATIONS_PATH)
+        response = client.get(PUBLICATIONS_PATH + '?cursor=')
         print response
         assert response.status_code == status.HTTP_200_OK
 
