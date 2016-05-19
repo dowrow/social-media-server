@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, PublicationSerializer
 
-class Me(APIView):
+class Self(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, format=None):

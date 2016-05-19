@@ -9,11 +9,12 @@ from rest_framework.test import APITestCase, APIClient
 from social.apps.django_app.default.models import UserSocialAuth
 
 ROOT_PATH = '/api/v0'
-ME_PATH = ROOT_PATH + '/me/'
+USERS_PATH = ROOT_PATH + '/users/'
+SELF_PATH = USERS_PATH + 'self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
 
 
-class MeTests(APITestCase):
+class SelfTests(APITestCase):
     def setUp(self):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
@@ -24,7 +25,7 @@ class MeTests(APITestCase):
     @staticmethod
     def test_get_fail():
         client = APIClient()
-        response = client.get(ME_PATH)
+        response = client.get(SELF_PATH)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         client.logout()
 
@@ -33,7 +34,7 @@ class MeTests(APITestCase):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.get(ME_PATH)
+        response = client.get(SELF_PATH)
         print response
         assert response.status_code == status.HTTP_200_OK
 
@@ -42,7 +43,7 @@ class MeTests(APITestCase):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.delete(ME_PATH)
+        response = client.delete(SELF_PATH)
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert User.objects.filter(username='test').exists() == False
 
