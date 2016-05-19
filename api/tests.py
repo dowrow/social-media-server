@@ -12,9 +12,9 @@ ROOT_PATH = '/api/v0'
 USERS_PATH = ROOT_PATH + '/users/'
 SELF_PATH = USERS_PATH + 'self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
+SELF_PUBLICATIONS_PATH = SELF_PATH + 'publications/'
 
-
-class SelfTests(APITestCase):
+class SelfDetailTests(APITestCase):
     def setUp(self):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
@@ -48,7 +48,7 @@ class SelfTests(APITestCase):
         assert User.objects.filter(username='test').exists() == False
 
 
-class PublicationTests(APITestCase):
+class PublicationListTests(APITestCase):
     IMAGE_PATH = 'test.jpg'
     TEST_IMAGE = SimpleUploadedFile(name='test.jpg', content=open(IMAGE_PATH, 'rb').read(), content_type='image/jpeg');
 
@@ -89,3 +89,47 @@ class PublicationTests(APITestCase):
         response = client.delete(PUBLICATIONS_PATH + str(id) + '/')
         print response
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+
+class SelfPublicationList(APITestCase):
+    IMAGE_PATH = 'test.jpg'
+    TEST_IMAGE = SimpleUploadedFile(name='test.jpg', content=open(IMAGE_PATH, 'rb').read(), content_type='image/jpeg');
+
+    def setUp(self):
+        test_user = User.objects.create(username='test', email='email@test.com')
+        test_user.set_password('password')
+        test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
+        test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
+        test_publication.save()
+
+    def test_get_ok(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        client.force_authenticate(test_user)
+        response = client.get(SELF_PUBLICATIONS_PATH + '?cursor=')
+        print response
+        assert response.status_code == status.HTTP_200_OK
+
+
+class UserPublicationList(APITestCase):
+    IMAGE_PATH = 'test.jpg'
+    TEST_IMAGE = SimpleUploadedFile(name='test.jpg', content=open(IMAGE_PATH, 'rb').read(), content_type='image/jpeg');
+
+    def setUp(self):
+        test_user = User.objects.create(username='test', email='email@test.com')
+        test_user.set_password('password')
+        test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
+        test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
+        test_publication.save()
+
+    def test_get_ok(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        client.force_authenticate(test_user)
+        response = client.get(USERS_PATH + str(test_user.pk) + '/publications/?cursor=')
+        print response
+        assert response.status_code == status.HTTP_200_OK

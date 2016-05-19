@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, PublicationSerializer
 
-class Self(APIView):
+
+class SelfDetail(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request, format=None):
@@ -20,10 +21,31 @@ class Self(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class SelfPublicationList(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = PublicationSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering = '-timestamp'
+
+    def get_queryset(self):
+        return Publication.objects.filter(author=self.request.user)
+
+
+class UserPublicationList(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = PublicationSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering = '-timestamp'
+
+    def get_queryset(self):
+        user = User.objects.get(pk=self.kwargs.get('pk'))
+        return Publication.objects.filter(author=user)
+
+
 class PublicationList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
-    permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (filters.OrderingFilter,)
     ordering = '-timestamp'
 
@@ -32,6 +54,6 @@ class PublicationList(generics.ListCreateAPIView):
 
 
 class PublicationDetail(generics.RetrieveDestroyAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
-    permission_classes = (permissions.IsAuthenticated,)
