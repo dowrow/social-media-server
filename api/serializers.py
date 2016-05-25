@@ -6,7 +6,12 @@ from .models import Publication
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     profile_picture = serializers.SerializerMethodField()
+    publications_count = serializers.SerializerMethodField()
+
+    def get_publications_count(self, user):
+        return Publication.objects.filter(author=user).count()
 
     def get_profile_picture(self, user):
         user_social_auth = UserSocialAuth.objects.get(user=user)
@@ -17,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'profile_picture')
+        fields = ('id', 'email', 'username', 'profile_picture', 'publications_count')
 
 
 class PublicationSerializer(serializers.ModelSerializer):
