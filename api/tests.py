@@ -14,6 +14,7 @@ SELF_PATH = USERS_PATH + 'self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
 SELF_PUBLICATIONS_PATH = SELF_PATH + 'publications/'
 
+
 class SelfDetailTests(APITestCase):
     def setUp(self):
         test_user = User.objects.create(username='test', email='email@test.com')
@@ -46,6 +47,31 @@ class SelfDetailTests(APITestCase):
         response = client.delete(SELF_PATH)
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert User.objects.filter(username='test').exists() == False
+
+
+class UserDetailTests(APITestCase):
+    def setUp(self):
+        test_user = User.objects.create(username='test', email='email@test.com')
+        test_user.set_password('password')
+        test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
+
+    @staticmethod
+    def test_get_fail():
+        client = APIClient()
+        response = client.get(SELF_PATH)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        client.logout()
+
+    @staticmethod
+    def test_get_ok():
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        client.force_authenticate(test_user)
+        response = client.get(USERS_PATH + '1/')
+        print response
+        assert response.status_code == status.HTTP_200_OK
 
 
 class PublicationListTests(APITestCase):

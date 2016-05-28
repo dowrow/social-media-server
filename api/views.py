@@ -21,6 +21,13 @@ class SelfDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class UserDetail(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        return Response(UserSerializer(User.objects.get(pk=pk)).data)
+
+
 class SelfPublicationList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PublicationSerializer
