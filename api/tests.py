@@ -9,8 +9,8 @@ from rest_framework.test import APITestCase, APIClient
 from social.apps.django_app.default.models import UserSocialAuth
 
 ROOT_PATH = '/api/v0'
-USERS_PATH = ROOT_PATH + '/users/'
-SELF_PATH = USERS_PATH + 'self/'
+USERS_PATH = ROOT_PATH + '/users'
+SELF_PATH = USERS_PATH + '/self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
 SELF_PUBLICATIONS_PATH = SELF_PATH + 'publications/'
 
@@ -23,24 +23,19 @@ class SelfDetailTests(APITestCase):
         test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
         test_user_social_auth.save()
 
-    @staticmethod
-    def test_get_fail():
+    def test_get_fail(self):
         client = APIClient()
         response = client.get(SELF_PATH)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        client.logout()
 
-    @staticmethod
-    def test_get_ok():
+    def test_get_ok(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(SELF_PATH)
-        print response
         assert response.status_code == status.HTTP_200_OK
 
-    @staticmethod
-    def test_delete():
+    def test_delete(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
@@ -57,20 +52,17 @@ class UserDetailTests(APITestCase):
         test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
         test_user_social_auth.save()
 
-    @staticmethod
-    def test_get_fail():
+    def test_get_fail(self):
         client = APIClient()
-        response = client.get(SELF_PATH)
+        test_user = User.objects.get(username='test')
+        response = client.get(USERS_PATH + '/1/')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        client.logout()
 
-    @staticmethod
-    def test_get_ok():
+    def test_get_ok(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.get(USERS_PATH + '1/')
-        print response
+        response = client.get(USERS_PATH + '/1/')
         assert response.status_code == status.HTTP_200_OK
 
 
@@ -94,12 +86,16 @@ class PublicationListTests(APITestCase):
         test_publication.save()
         test_publication2.save()
 
+    def test_get_fail(self):
+        client = APIClient()
+        response = client.get(PUBLICATIONS_PATH + '?cursor=')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_get_ok(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(PUBLICATIONS_PATH + '?cursor=')
-        print response
         assert response.status_code == status.HTTP_200_OK
 
     def test_post_delete_ok(self):
@@ -113,7 +109,6 @@ class PublicationListTests(APITestCase):
         assert response.status_code == status.HTTP_201_CREATED
         id = json.loads(response.content)['id']
         response = client.delete(PUBLICATIONS_PATH + str(id) + '/')
-        print response
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
 
@@ -130,12 +125,16 @@ class SelfPublicationList(APITestCase):
         test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
         test_publication.save()
 
+    def test_get_fail(self):
+        client = APIClient()
+        response = client.get(SELF_PUBLICATIONS_PATH + '?cursor=')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_get_ok(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(SELF_PUBLICATIONS_PATH + '?cursor=')
-        print response
         assert response.status_code == status.HTTP_200_OK
 
 
@@ -152,10 +151,49 @@ class UserPublicationList(APITestCase):
         test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
         test_publication.save()
 
+    def test_get_fail(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        response = client.get(USERS_PATH + '/' + str(test_user.pk) + '/publications/?cursor=')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
     def test_get_ok(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
-        response = client.get(USERS_PATH + str(test_user.pk) + '/publications/?cursor=')
-        print response
+        response = client.get(USERS_PATH + "/" + str(test_user.pk) + '/publications/?cursor=')
         assert response.status_code == status.HTTP_200_OK
+
+
+class UserSearchTest(APITestCase):
+    IMAGE_PATH = 'test.jpg'
+    TEST_IMAGE = SimpleUploadedFile(name='test.jpg', content=open(IMAGE_PATH, 'rb').read(), content_type='image/jpeg');
+
+    def setUp(self):
+        test_user = User.objects.create(username='test', email='email@test.com')
+        test_user.set_password('password')
+        test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth.save()
+        test_publication = Publication.objects.create(text="Test title 1", author=test_user, image=self.TEST_IMAGE)
+        test_publication.save()
+
+    def test_get_fail(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        response = client.get(USERS_PATH + '/?search=test')
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_search_ok(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        client.force_authenticate(test_user)
+        response = client.get(USERS_PATH + '/?search=dontexists')
+        assert response.status_code == status.HTTP_200_OK
+        response = client.get(USERS_PATH + '/?search=test')
+        assert response.status_code == status.HTTP_200_OK
+        response = client.get(USERS_PATH + '/?search=tes')
+        assert response.status_code == status.HTTP_200_OK
+        response = client.get(USERS_PATH + '/?search=TEST')
+        assert response.status_code == status.HTTP_200_OK
+

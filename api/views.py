@@ -2,16 +2,12 @@ from api.models import Publication
 from django.contrib.auth.models import User
 from rest_framework import filters
 from rest_framework import generics
-from rest_framework import permissions
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, PublicationSerializer
 
-
 class SelfDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
     def get(self, request, format=None):
         return Response(UserSerializer(request.user).data)
 
@@ -22,14 +18,19 @@ class SelfDetail(APIView):
 
 
 class UserDetail(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
-
     def get(self, request, pk, format=None):
         return Response(UserSerializer(User.objects.get(pk=pk)).data)
 
 
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = (filters.SearchFilter, filters.OrderingFilter,)
+    search_fields = ('username',)
+    ordering = '-username'
+
+
 class SelfPublicationList(generics.ListAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PublicationSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering = '-timestamp'
@@ -39,7 +40,6 @@ class SelfPublicationList(generics.ListAPIView):
 
 
 class UserPublicationList(generics.ListAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PublicationSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering = '-timestamp'
@@ -50,7 +50,6 @@ class UserPublicationList(generics.ListAPIView):
 
 
 class PublicationList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
     filter_backends = (filters.OrderingFilter,)
@@ -61,6 +60,5 @@ class PublicationList(generics.ListCreateAPIView):
 
 
 class PublicationDetail(generics.RetrieveDestroyAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
