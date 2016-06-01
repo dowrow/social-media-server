@@ -152,7 +152,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'PAGE_SIZE': 5, # TODO change to something more rational
+    'PAGE_SIZE': 10, # TODO change to something more rational
 }
 
 
