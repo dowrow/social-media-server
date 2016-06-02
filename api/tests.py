@@ -1,6 +1,6 @@
 import json
 
-from api.models import Publication
+from api.models import Publication, Follow
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -225,14 +225,16 @@ class FollowDetailTest(APITestCase):
         response = client.post(FOLLOWS_PATH, {
             'followed': test_user2.id
         })
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
 
     def test_delete(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         test_user2 = User.objects.get(username='test2')
         client.force_authenticate(test_user)
-        
         response = client.post(FOLLOWS_PATH, {
             'followed': test_user2.id
         })
+        follow_id = json.loads(response.content)['id']
+        response = client.delete(FOLLOWS_PATH + str(follow_id) + '/')
+        assert response.status_code == status.HTTP_204_NO_CONTENT

@@ -74,6 +74,7 @@ class FollowList(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(follower=self.request.user)
 
+
 class FollowDetail(generics.RetrieveDestroyAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
