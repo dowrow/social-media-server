@@ -13,7 +13,7 @@ USERS_PATH = ROOT_PATH + '/users'
 SELF_PATH = USERS_PATH + '/self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
 SELF_PUBLICATIONS_PATH = SELF_PATH + 'publications/'
-
+FOLLOWS_PATH = ROOT_PATH + '/follows/'
 
 class SelfDetailTests(APITestCase):
     def setUp(self):
@@ -197,3 +197,42 @@ class UserSearchTest(APITestCase):
         response = client.get(USERS_PATH + '/?search=TEST')
         assert response.status_code == status.HTTP_200_OK
 
+
+class FollowDetailTest(APITestCase):
+    def setUp(self):
+        test_user = User.objects.create(username='test', email='email@test.com')
+        test_user.set_password('password')
+        test_user.save()
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook',
+                                                              uid='10153580114080777')
+        test_user_social_auth.save()
+        test_user2 = User.objects.create(username='test2', email='email2@test.com')
+        test_user2.set_password('password2')
+        test_user2.save()
+        test_user_social_auth2 = UserSocialAuth.objects.create(user=test_user2, provider='twitter', uid='162377671')
+        test_user_social_auth2.save()
+
+    def test_get_fail(self):
+        client = APIClient()
+        response = client.post(FOLLOWS_PATH)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_create(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        test_user2 = User.objects.get(username='test2')
+        client.force_authenticate(test_user)
+        response = client.post(FOLLOWS_PATH, {
+            'followed': test_user2.id
+        })
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_delete(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        test_user2 = User.objects.get(username='test2')
+        client.force_authenticate(test_user)
+        
+        response = client.post(FOLLOWS_PATH, {
+            'followed': test_user2.id
+        })

@@ -1,12 +1,10 @@
-from api.models import Publication
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from social.apps.django_app.default.models import UserSocialAuth
-from .models import Publication
+from .models import Publication, Follow
 
 
 class UserSerializer(serializers.ModelSerializer):
-
     profile_picture = serializers.SerializerMethodField()
     publications_count = serializers.SerializerMethodField()
 
@@ -39,4 +37,11 @@ class PublicationSerializer(serializers.ModelSerializer):
         model = Publication
         fields = ('id', 'author_details', 'timestamp', 'image', 'text', )
         read_only_fields = ('author',)
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = '__all__'
+        read_only_fields = ('follower',)
 

@@ -11,3 +11,9 @@ class Publication(models.Model):
     text = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+    followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed')
+    timestamp = models.DateTimeField(auto_now=True)

@@ -17,16 +17,24 @@ urlpatterns = [
 
     url(r'^users/(?P<pk>[0-9]+)/publications/', views.UserPublicationList.as_view()),  # /users/{id}/publications/
 
+    url(r'^follows/$', views.FollowList.as_view()), # /follows/
+
+    url(r'^follows/(?P<pk>[0-9]+)/$', views.FollowDetail.as_view()),  # /follows/{id}/
+
 ]
 
 """
 
 /publications/ -
 /publications/<id>/ -
+
 /users/-
 /users/<id>/ -
 /users/<id>/publications/ -
 /users/self/ -
 /users/self/publications/ -
+
+/follows/ -
+/follows/{id}/ -
 
 """

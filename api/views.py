@@ -1,11 +1,12 @@
-from api.models import Publication
+from api.models import Publication, Follow
 from django.contrib.auth.models import User
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import UserSerializer, PublicationSerializer
+from .serializers import UserSerializer, PublicationSerializer, FollowSerializer
+
 
 class SelfDetail(APIView):
     def get(self, request, format=None):
@@ -62,3 +63,18 @@ class PublicationList(generics.ListCreateAPIView):
 class PublicationDetail(generics.RetrieveDestroyAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
+
+
+class FollowList(generics.CreateAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering = '-timestamp'
+
+    def perform_create(self, serializer):
+        serializer.save(follower=self.request.user)
+
+class FollowDetail(generics.RetrieveDestroyAPIView):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+
