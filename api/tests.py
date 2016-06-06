@@ -225,7 +225,6 @@ class FollowDetailTest(APITestCase):
         response = client.post(FOLLOWS_PATH, {
             'followed': test_user2.id
         })
-        print response
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_delete(self):

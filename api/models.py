@@ -17,3 +17,4 @@ class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
     followed = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed')
     timestamp = models.DateTimeField(auto_now=True)
+    unique_together = ('follower', 'followed',)
