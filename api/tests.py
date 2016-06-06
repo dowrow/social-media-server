@@ -227,6 +227,20 @@ class FollowDetailTest(APITestCase):
         })
         assert response.status_code == status.HTTP_201_CREATED
 
+    def test_duplicate(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        test_user2 = User.objects.get(username='test2')
+        client.force_authenticate(test_user)
+        response = client.post(FOLLOWS_PATH, {
+            'followed': test_user2.id
+        })
+        assert response.status_code == status.HTTP_201_CREATED
+        response = client.post(FOLLOWS_PATH, {
+            'followed': test_user2.id
+        })
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+
     def test_delete(self):
         client = APIClient()
         test_user = User.objects.get(username='test')

@@ -1,8 +1,10 @@
 from api.models import Publication, Follow
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import UserSerializer, PublicationSerializer, FollowSerializer
@@ -72,7 +74,12 @@ class FollowList(generics.CreateAPIView):
     ordering = '-timestamp'
 
     def perform_create(self, serializer):
-        serializer.save(follower=self.request.user)
+        current_user = self.request.user
+        queryset = Follow.objects.filter(follower=current_user, followed=self.request.POST['followed'])
+        if queryset.exists():
+            raise APIException('Follow relationship already exists')
+        else:
+            serializer.save(follower=self.request.user)
 
 
 class FollowDetail(generics.RetrieveDestroyAPIView):

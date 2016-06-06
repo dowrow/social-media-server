@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from social.apps.django_app.default.models import UserSocialAuth
 from .models import Publication, Follow
 
@@ -44,4 +45,3 @@ class FollowSerializer(serializers.ModelSerializer):
         model = Follow
         fields = '__all__'
         read_only_fields = ('follower',)
-
