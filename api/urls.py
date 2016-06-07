@@ -5,6 +5,8 @@ urlpatterns = [
 
     url(r'^publications/$', views.PublicationList.as_view()), # /publications/
 
+    url(r'^publications/home/$', views.HomePublicationList.as_view()),  # /publications/home/
+
     url(r'^publications/(?P<pk>[0-9]+)/$', views.PublicationDetail.as_view()), # /publications/{id}/
 
     url(r'^users/$', views.UserList.as_view()), # /users/?search={search}

@@ -47,7 +47,6 @@ class SelfPublicationList(generics.ListAPIView):
         return {'request': self.request}
 
 
-
 class UserPublicationList(generics.ListAPIView):
     serializer_class = PublicationSerializer
     filter_backends = (filters.OrderingFilter,)
@@ -74,6 +73,19 @@ class PublicationList(generics.ListCreateAPIView):
         return {'request': self.request}
 
 
+class HomePublicationList(generics.ListAPIView):
+    serializer_class = PublicationSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering = '-timestamp'
+
+    def get_queryset(self):
+        followed_users = Follow.objects.filter(follower=self.request.user).values('followed')
+        return Publication.objects.filter(author__in=followed_users)
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+
 class PublicationDetail(generics.RetrieveDestroyAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
@@ -91,6 +103,7 @@ class FollowUser(APIView):
             follow.save()
             return Response(FollowSerializer(follow).data, status=status.HTTP_201_CREATED)
 
+
 class UnfollowUser(APIView):
     def delete(self, request, follower_pk, followed_pk, format=None):
         follower = User.objects.get(pk=follower_pk)
@@ -103,6 +116,7 @@ class UnfollowUser(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
             raise APIException('Follow does not exists')
+
 
 class FollowList(generics.CreateAPIView):
     queryset = Follow.objects.all()
