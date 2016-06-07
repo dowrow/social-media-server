@@ -13,8 +13,7 @@ USERS_PATH = ROOT_PATH + '/users'
 SELF_PATH = USERS_PATH + '/self/'
 PUBLICATIONS_PATH = ROOT_PATH + '/publications/'
 SELF_PUBLICATIONS_PATH = SELF_PATH + 'publications/'
-FOLLOWS_PATH = ROOT_PATH + '/follows/'
-
+FOLLOWERS_PATH = '/followers/'
 class SelfDetailTests(APITestCase):
     def setUp(self):
         test_user = User.objects.create(username='test', email='email@test.com')
@@ -54,7 +53,6 @@ class UserDetailTests(APITestCase):
 
     def test_get_fail(self):
         client = APIClient()
-        test_user = User.objects.get(username='test')
         response = client.get(USERS_PATH + '/1/')
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
@@ -214,41 +212,36 @@ class FollowDetailTest(APITestCase):
 
     def test_get_fail(self):
         client = APIClient()
-        response = client.post(FOLLOWS_PATH)
+        test_user2 = User.objects.get(username='test2')
+        response = client.post(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_create(self):
+    def test_follow(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         test_user2 = User.objects.get(username='test2')
         client.force_authenticate(test_user)
-        response = client.post(FOLLOWS_PATH, {
-            'followed': test_user2.id
-        })
+        response = client.post(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH)
         assert response.status_code == status.HTTP_201_CREATED
 
-    def test_duplicate(self):
+    def test_unfollow(self):
         client = APIClient()
         test_user = User.objects.get(username='test')
         test_user2 = User.objects.get(username='test2')
         client.force_authenticate(test_user)
-        response = client.post(FOLLOWS_PATH, {
-            'followed': test_user2.id
-        })
-        assert response.status_code == status.HTTP_201_CREATED
-        response = client.post(FOLLOWS_PATH, {
-            'followed': test_user2.id
-        })
-        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-
-    def test_delete(self):
-        client = APIClient()
-        test_user = User.objects.get(username='test')
-        test_user2 = User.objects.get(username='test2')
-        client.force_authenticate(test_user)
-        response = client.post(FOLLOWS_PATH, {
-            'followed': test_user2.id
-        })
-        follow_id = json.loads(response.content)['id']
-        response = client.delete(FOLLOWS_PATH + str(follow_id) + '/')
+        response = client.post(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH)
+        response = client.delete(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH + str(test_user.id) + '/')
+        print response
+        print response.status_code
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_duplicate_follow(self):
+        client = APIClient()
+        test_user = User.objects.get(username='test')
+        test_user2 = User.objects.get(username='test2')
+        client.force_authenticate(test_user)
+        response = client.post(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH)
+        assert response.status_code == status.HTTP_201_CREATED
+        response = client.post(USERS_PATH + "/" + str(test_user2.id) + FOLLOWERS_PATH)
+        assert response.status_code != status.HTTP_201_CREATED
+

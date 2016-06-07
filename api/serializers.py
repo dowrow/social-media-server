@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from social.apps.django_app.default.models import UserSocialAuth
 from .models import Publication, Follow
 
@@ -8,6 +7,11 @@ from .models import Publication, Follow
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField()
     publications_count = serializers.SerializerMethodField()
+    followed = serializers.SerializerMethodField()
+
+    def get_followed(self, user):
+        current_user = self.context['request'].user
+        return Follow.objects.filter(follower=current_user, followed=user).exists()
 
     def get_publications_count(self, user):
         return Publication.objects.filter(author=user).count()
@@ -25,14 +29,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'profile_picture', 'publications_count')
+        fields = ('id', 'email', 'username', 'profile_picture', 'publications_count', 'followed')
 
 
 class PublicationSerializer(serializers.ModelSerializer):
     author_details = serializers.SerializerMethodField()
 
     def get_author_details(self, publication):
-        return UserSerializer(publication.author).data
+        return UserSerializer(publication.author, context=self.context).data
 
     class Meta:
         model = Publication
