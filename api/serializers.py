@@ -6,8 +6,18 @@ from .models import Publication, Follow
 
 class UserSerializer(serializers.ModelSerializer):
     profile_picture = serializers.SerializerMethodField()
-    publications_count = serializers.SerializerMethodField()
     followed = serializers.SerializerMethodField()
+    publications_count = serializers.SerializerMethodField()
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+
+    def get_followers_count(self, user):
+        current_user = self.context['request'].user
+        return Follow.objects.filter(followed=current_user).count()
+
+    def get_following_count(self, user):
+        current_user = self.context['request'].user
+        return Follow.objects.filter(follower=current_user).count()
 
     def get_followed(self, user):
         current_user = self.context['request'].user
@@ -29,7 +39,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'username', 'profile_picture', 'publications_count', 'followed')
+        fields = ('id', 'email', 'username', 'profile_picture', 'followed', 'publications_count', 'followers_count',
+                  'following_count')
 
 
 class PublicationSerializer(serializers.ModelSerializer):
