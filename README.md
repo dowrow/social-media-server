@@ -1,4 +1,4 @@
-# social-media-server [![Build Status](https://travis-ci.com/dowrow/social-media-server.svg?token=sd16Z6Md6Ma6j2trm6xo&branch=master)](https://travis-ci.com/dowrow/social-media-server)
+# social-media-server [![Build Status](https://travis-ci.org/dowrow/social-media-server.svg?branch=master)](https://travis-ci.org/dowrow/social-media-server)
 RESTfull API for a social media platform  based on Django 1.9.
 
 ## Continuous Integration
