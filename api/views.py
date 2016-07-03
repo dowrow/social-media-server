@@ -136,4 +136,3 @@ class FollowList(generics.CreateAPIView):
 class FollowDetail(generics.RetrieveDestroyAPIView):
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
-

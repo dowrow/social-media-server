@@ -22,7 +22,8 @@ class SelfDetailTests(APITestCase):
         test_user = User.objects.create(username='test', email='email@test.com')
         test_user.set_password('password')
         test_user.save()
-        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook', uid='10153580114080777')
+        test_user_social_auth = UserSocialAuth.objects.create(user=test_user, provider='facebook',
+                                                              uid='10153580114080777')
         test_user_social_auth.save()
 
     def test_get_fail(self):
@@ -36,6 +37,16 @@ class SelfDetailTests(APITestCase):
         client.force_authenticate(test_user)
         response = client.get(SELF_PATH)
         assert response.status_code == status.HTTP_200_OK
+        self.assertEqual(response.data, {
+            'username': 'test',
+            'followed': False,
+            'following_count': 0,
+            'profile_picture': 'https://graph.facebook.com/10153580114080777/picture?type=normal',
+            'email': 'email@test.com',
+            'followers_count': 0,
+            'publications_count': 0,
+            'id': 1
+        })
 
     def test_delete(self):
         client = APIClient()
@@ -286,5 +297,4 @@ class HomePublicationListTests(APITestCase):
         test_user = User.objects.get(username='test')
         client.force_authenticate(test_user)
         response = client.get(HOME_PUBLICATIONS_PATH + '?cursor=')
-        print response
         assert response.status_code == status.HTTP_200_OK
